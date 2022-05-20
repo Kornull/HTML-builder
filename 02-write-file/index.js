@@ -10,7 +10,7 @@ const stream = fs.createWriteStream(filePath);
 console.log('File created, enter text please:\n');
 
 rl.on('line', (line) => {
-  if (!line.toLowerCase().includes('exit')) {
+  if (line.toLowerCase() !== 'exit') {
     stream.write(`${line}\n`);
   } else {
     rl.close();
