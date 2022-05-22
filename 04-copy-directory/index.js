@@ -4,6 +4,7 @@ const path = require('path');
 const directory = path.join(__dirname, 'files');
 const copyDirectory = path.join(__dirname, 'files-copy');
 
+
 fs.mkdir(copyDirectory, { recursive: true }, err => {
   if (err) throw err;
 });
