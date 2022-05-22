@@ -18,6 +18,6 @@ rl.on('line', (line) => {
 });
 
 process.on('exit', () => {
-  console.log('File "text.txt" saved.\tGoodbye.');
+  console.log('\nFile "text.txt" saved.');
 });
 
