@@ -5,21 +5,23 @@ const directory = path.join(__dirname, 'files');
 const copyDirectory = path.join(__dirname, 'files-copy');
 
 
-fs.mkdir(copyDirectory, { recursive: true }, err => {
-  if (err) throw err;
-});
 
-fs.readdir(directory, (error, files) => {
-  if (error) throw error;
+(async () => {
+  await fs.promises.rm(copyDirectory, { recursive: true, force: true });
+  await fs.promises.mkdir(copyDirectory);
+  const files = await fs.promises.readdir(directory, { withFileTypes: true });
   files.forEach(f => {
-    fs.stat(`${directory}/${f}`, (error, file) => {
-      if (file.isFile()) {
-        const fileDir = path.join(directory, f);
-        const fileCopyDir = path.join(copyDirectory, f);
-        fs.copyFile(fileDir, fileCopyDir, error => {
-          if (error) throw error;
-        });
-      }
-    });
+    if (f.isFile()) {
+      const fileDir = path.join(directory, f.name);
+      const fileCopyDir = path.join(copyDirectory, f.name);
+      fs.copyFile(fileDir, fileCopyDir, error => {
+        if (error) throw error;
+      });
+    }
   });
-});
+  console.log('Copy file build');
+})();
+
+
+
+
