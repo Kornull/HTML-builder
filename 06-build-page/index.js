@@ -8,6 +8,7 @@ fs.mkdir(directory, { recursive: true }, err => {
 });
 
 const filePath = path.join(__dirname, 'project-dist', 'style.css');
+const copyDirectory = path.join(__dirname, 'project-dist', 'assets');
 const styleFile = path.join(__dirname, 'styles');
 const streamWrite = fs.createWriteStream(filePath);
 
@@ -17,7 +18,7 @@ const streamWriteIndexHtml = fs.createWriteStream(indexHtmlPath);
 const htmlFiles = path.join(__dirname, 'components');
 
 const readline = require('readline');
-
+const directoryPath = path.join(__dirname, 'assets');
 
 
 // create style.css
@@ -60,30 +61,23 @@ async function sortedFiles(files) {
 
 // copy assets
 async function createAssets() {
-  const directory = path.join(__dirname, 'assets');
-  const copyDirectory = path.join(__dirname, 'project-dist', 'assets');
+  await fs.promises.rm(copyDirectory, { recursive: true, force: true });
+  await fs.promises.mkdir(copyDirectory);
+  const files = await fs.promises.readdir(directoryPath);
+  for (let i of files) {
+    const assetsFiles = path.join(directoryPath, i);
+    const filesAss = await fs.promises.readdir(assetsFiles);
+    await fs.promises.mkdir(`${copyDirectory}/${i}`);
 
-  fs.mkdir(copyDirectory, { recursive: true }, err => {
-    if (err) throw err;
-  });
-  const dirs = await fs.promises.readdir(directory);
-
-  dirs.forEach(f => {
-    const copyFiles = `${copyDirectory}/${f}`;
-    fs.mkdir(copyFiles, { recursive: true }, err => {
-      if (err) throw err;
-    });
-    const pathDir = path.join(directory, f);
-    fs.readdir(pathDir, (error, fil) => {
-      fil.forEach(i => {
-        const fileDir = path.join(pathDir, i);
-        const fileCopyDir = path.join(copyFiles, i);
-        fs.copyFile(fileDir, fileCopyDir, error => {
-          if (error) throw new Error('Ошибка загрузки шрифта(при включенном liveServer vsCode иногда простреливает): ');
-        });
+    filesAss.forEach(l => {
+      const fileDir = path.join(assetsFiles, l);
+      const fileCopyDir = path.join(`${copyDirectory}/${i}`, l);
+      fs.copyFile(fileDir, fileCopyDir, error => {
+        if (error) throw error;
       });
     });
-  });
+  }
+  console.log('Copy file build');
 }
 
 // create object html files
@@ -119,6 +113,6 @@ async function writeHtml() {
 // run fnctions
 (async () => {
   await writeCss();
-  writeHtml();
+  await writeHtml();
   createAssets();
 })();
