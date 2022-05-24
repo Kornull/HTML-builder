@@ -33,7 +33,7 @@ async function writeCss() {
         const stream = fs.createReadStream(allPath, 'utf-8');
         stream.on('data', (chunk) => {
           data += chunk;
-          streamWrite.write(`${data}\n`);
+          streamWrite.write(`${data}\n\n`);
         });
       }
     });
