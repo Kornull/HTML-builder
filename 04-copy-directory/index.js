@@ -19,5 +19,9 @@ const copyDirectory = path.join(__dirname, 'files-copy');
       });
     }
   });
-  console.log('Copy-File build.');
+  console.log('Copy file build');
 })();
+
+
+
+
