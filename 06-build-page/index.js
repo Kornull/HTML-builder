@@ -79,7 +79,7 @@ async function createAssets() {
         const fileDir = path.join(pathDir, i);
         const fileCopyDir = path.join(copyFiles, i);
         fs.copyFile(fileDir, fileCopyDir, error => {
-          if (error) throw new Error('Ошибка загрузки шрифта: ');
+          if (error) throw new Error('Ошибка загрузки шрифта(при включенном liveServer vsCode иногда простреливает): ');
         });
       });
     });
