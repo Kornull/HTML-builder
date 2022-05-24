@@ -66,22 +66,20 @@ async function createAssets() {
   fs.mkdir(copyDirectory, { recursive: true }, err => {
     if (err) throw err;
   });
+  const dirs = await fs.promises.readdir(directory);
 
-  fs.readdir(directory, (error, files) => {
-    if (error) throw error;
-    files.forEach(f => {
-      const copyFiles = `${copyDirectory}/${f}`;
-      fs.mkdir(copyFiles, { recursive: true }, err => {
-        if (err) throw err;
-      });
-      const pathDir = path.join(directory, f);
-      fs.readdir(pathDir, (error, fil) => {
-        fil.forEach(i => {
-          const fileDir = path.join(pathDir, i);
-          const fileCopyDir = path.join(copyFiles, i);
-          fs.copyFile(fileDir, fileCopyDir, error  => {
-            if (error) throw new Error('Ошибка загрузки шрифта: ');
-          });
+  dirs.forEach(f => {
+    const copyFiles = `${copyDirectory}/${f}`;
+    fs.mkdir(copyFiles, { recursive: true }, err => {
+      if (err) throw err;
+    });
+    const pathDir = path.join(directory, f);
+    fs.readdir(pathDir, (error, fil) => {
+      fil.forEach(i => {
+        const fileDir = path.join(pathDir, i);
+        const fileCopyDir = path.join(copyFiles, i);
+        fs.copyFile(fileDir, fileCopyDir, error => {
+          if (error) throw new Error('Ошибка загрузки шрифта: ');
         });
       });
     });
