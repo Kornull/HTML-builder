@@ -80,7 +80,7 @@ async function createAssets() {
           const fileDir = path.join(pathDir, i);
           const fileCopyDir = path.join(copyFiles, i);
           fs.copyFile(fileDir, fileCopyDir, error  => {
-            if (error) throw new Error('X');
+            if (error) throw new Error('Ошибка загрузки шрифта: ');
           });
         });
       });
