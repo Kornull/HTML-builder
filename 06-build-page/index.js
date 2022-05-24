@@ -2,6 +2,7 @@ let fs = require('fs');
 const path = require('path');
 const directory = path.join(__dirname, 'project-dist');
 
+// create dir project
 fs.mkdir(directory, { recursive: true }, err => {
   if (err) throw err;
 });
@@ -19,31 +20,29 @@ const readline = require('readline');
 
 
 
-
-(async () =>{
-  fs.readdir(styleFile, (err, files) => {
-    const a = sortedFiles(files);
-    if (err) throw err;
-    a.forEach(file => {
-      fs.stat(`${styleFile}/${file}`, (error, f) => {
-        if (error) throw error;
-        if (f.isFile() && file.split('.').pop() === 'css') {
-          let data = '';
-          const allPath = path.join(styleFile, file);
-          const stream = fs.createReadStream(allPath, 'utf-8');
-          stream.on('data', (chunk) => {
-            data += chunk;
-            streamWrite.write(`${data}\n`);
-          });
-        }
-      });
+// create style.css
+async function writeCss() {
+  const files = await fs.promises.readdir(styleFile);
+  const a = await sortedFiles(files);
+  a.forEach(file => {
+    fs.stat(`${styleFile}/${file}`, (error, f) => {
+      if (error) throw error;
+      if (f.isFile() && file.split('.').pop() === 'css') {
+        let data = '';
+        const allPath = path.join(styleFile, file);
+        const stream = fs.createReadStream(allPath, 'utf-8');
+        stream.on('data', (chunk) => {
+          data += chunk;
+          streamWrite.write(`${data}\n`);
+        });
+      }
     });
   });
-})();
+}
 
 
-
-function sortedFiles(files) {
+// sorted files css
+async function sortedFiles(files) {
   const arr = [];
   files.forEach(file => {
     if (file.split('.')[0] === 'header') arr.push(file);
@@ -59,7 +58,7 @@ function sortedFiles(files) {
 }
 
 
-
+// copy assets
 async function createAssets() {
   const directory = path.join(__dirname, 'assets');
   const copyDirectory = path.join(__dirname, 'project-dist', 'assets');
@@ -80,8 +79,8 @@ async function createAssets() {
         fil.forEach(i => {
           const fileDir = path.join(pathDir, i);
           const fileCopyDir = path.join(copyFiles, i);
-          fs.copyFile(fileDir, fileCopyDir, error => {
-            if (error) throw error;
+          fs.copyFile(fileDir, fileCopyDir, error  => {
+            if (error) throw new Error('X');
           });
         });
       });
@@ -89,6 +88,7 @@ async function createAssets() {
   });
 }
 
+// create object html files
 const objHtmlFiles = async function () {
   const objHtml = {};
   const files = await fs.promises.readdir(htmlFiles, { withFileTypes: true });
@@ -100,7 +100,8 @@ const objHtmlFiles = async function () {
   return objHtml;
 };
 
-async function readIndex() {
+// write index.html
+async function writeHtml() {
   const filesText = await objHtmlFiles();
   const dir = path.join(__dirname, 'template.html');
 
@@ -117,8 +118,9 @@ async function readIndex() {
   });
 }
 
-
+// run fnctions
 (async () => {
-  await createAssets();
-  readIndex();
+  await writeCss();
+  writeHtml();
+  createAssets();
 })();
